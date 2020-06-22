@@ -26,6 +26,21 @@ pub async fn main() -> Result<(), anyhow::Error> {
                 .help("Sets the SRS frequency (in Hz, e.g. 255000000 for 255MHz)")
                 .takes_value(true),
         )
+		.arg(
+            clap::Arg::with_name("station_name")
+                .short("n")
+                .long("name")
+                .default_value("DCS Radio Station")
+                .help("Sets the name of the DCS Radio Station Client"),
+        )
+		.arg(
+			clap::Arg::with_name("port")
+				.short("p")
+				.long("port")
+				.default_value("5002")
+				.help("Sets the SRS Port")
+				.takes_value(true),
+		)
         .arg(
             clap::Arg::with_name("loop")
                 .short("l")
@@ -43,6 +58,14 @@ pub async fn main() -> Result<(), anyhow::Error> {
     // Calling .unwrap() is safe here because "INPUT" is required
     let path = matches.value_of("PATH").unwrap();
     let should_loop = matches.is_present("loop");
+	let port = matches.value_of("port").unwrap();
+	let port = if let Ok(n) = u16::from_str(port) {
+		n
+	} else {
+		error! ("The provided Port is not a valid number");
+		return Ok(());
+	};
+	let radio_name = matches.value_of("station_name").unwrap();
     let freq = matches.value_of("frequency").unwrap();
     let freq = if let Ok(n) = u64::from_str(freq) {
         n
@@ -51,10 +74,10 @@ pub async fn main() -> Result<(), anyhow::Error> {
         return Ok(());
     };
 
-    let mut station = RadioStation::new("DCS Radio Station");
+    let mut station = RadioStation::new(radio_name);
     station.set_frequency(freq);
     station.set_position(0.0, 0.0, 8000.);
-    station.set_port(5002);
+    station.set_port(port);
 
     info!("Start playing ...");
     station.play(path, should_loop).await?;
