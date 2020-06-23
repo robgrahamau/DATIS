@@ -33,6 +33,13 @@ pub async fn main() -> Result<(), anyhow::Error> {
                 .default_value("DCS Radio Station")
                 .help("Sets the name of the DCS Radio Station Client"),
         )
+        .arg(
+            clap::Arg::with_name("radio_modulation")
+                .short("m")
+                .long("modulation")
+                .default_value("AM")
+                .help("Set the Modulation of the DCS Radio Station Client"),
+        )
 		.arg(
 			clap::Arg::with_name("port")
 				.short("p")
@@ -66,6 +73,7 @@ pub async fn main() -> Result<(), anyhow::Error> {
 		return Ok(());
 	};
 	let radio_name = matches.value_of("station_name").unwrap();
+    let radio_modulation = matches.value_of("radio_modulation").unwrap();
     let freq = matches.value_of("frequency").unwrap();
     let freq = if let Ok(n) = u64::from_str(freq) {
         n
@@ -74,7 +82,7 @@ pub async fn main() -> Result<(), anyhow::Error> {
         return Ok(());
     };
 
-    let mut station = RadioStation::new(radio_name);
+    let mut station = RadioStation::new(radio_name,radio_modulation);
     station.set_frequency(freq);
     station.set_position(0.0, 0.0, 8000.);
     station.set_port(port);

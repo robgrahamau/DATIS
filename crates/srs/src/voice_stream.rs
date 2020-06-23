@@ -242,12 +242,16 @@ impl Sink<Vec<u8>> for VoiceStream {
     fn start_send(self: Pin<&mut Self>, item: Vec<u8>) -> Result<(), Self::Error> {
         let mut sguid = [0; 22];
         sguid.clone_from_slice(self.client.sguid().as_bytes());
-
+        let mut m = Modulation::AM;
+        if self.client.m() == "FM"
+        {
+            m = Modulation::FM;
+        }
         let packet = VoicePacket {
             audio_part: item,
             frequencies: vec![Frequency {
                 freq: self.client.freq() as f64,
-                modulation: Modulation::AM,
+                modulation: m,
                 encryption: Encryption::None,
             }],
             unit_id: self.client.unit().map(|u| u.id).unwrap_or(0),

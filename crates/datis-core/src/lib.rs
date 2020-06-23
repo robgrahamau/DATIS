@@ -249,7 +249,7 @@ async fn run(
     shutdown_signal: oneshot::Receiver<()>,
 ) -> Result<(), anyhow::Error> {
     let name = format!("ATIS {}", station.name);
-    let mut client = Client::new(&name, station.freq);
+    let mut client = Client::new(&name, station.freq, "AM");
     match &station.transmitter {
         Transmitter::Airfield(airfield) => {
             let pos = if let Some(rpc) = &station.rpc {

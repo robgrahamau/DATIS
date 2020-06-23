@@ -21,15 +21,17 @@ pub struct RadioStation {
     position: LatLngPosition,
     freq: u64,
     port: u16,
+    m: String,
 }
 
 impl RadioStation {
-    pub fn new(name: &str) -> Self {
+    pub fn new(name: &str, m: &str) -> Self {
         RadioStation {
             name: name.to_string(),
             position: LatLngPosition::default(),
             freq: 251_000_000,
             port: 5002,
+            m: m.to_string(),
         }
     }
 
@@ -44,13 +46,13 @@ impl RadioStation {
     pub fn set_frequency(&mut self, freq: u64) {
         self.freq = freq;
     }
-
+    
     pub async fn play<P: AsRef<Path>>(
         self,
         path: P,
         should_loop: bool,
     ) -> Result<(), anyhow::Error> {
-        let mut client = Client::new(&self.name, self.freq);
+        let mut client = Client::new(&self.name, self.freq, &self.m);
         client.set_position(self.position);
 
         let (_tx, rx) = oneshot::channel();

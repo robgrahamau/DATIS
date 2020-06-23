@@ -17,16 +17,18 @@ pub struct Client {
     sguid: String,
     name: String,
     freq: u64,
+    m: String,
     pos: Arc<RwLock<LatLngPosition>>,
     unit: Option<UnitInfo>,
 }
 
 impl Client {
-    pub fn new(name: &str, freq: u64) -> Self {
+    pub fn new(name: &str, freq: u64, m: &str) -> Self {
         Client {
             sguid: create_sguid(),
             name: name.to_string(),
             freq,
+            m: m.to_string(),
             pos: Arc::new(RwLock::new(LatLngPosition::default())),
             unit: None,
         }
@@ -39,7 +41,9 @@ impl Client {
     pub fn name(&self) -> &str {
         &self.name
     }
-
+    pub fn m(&self) -> &str {
+        &self.m
+    }
     pub fn freq(&self) -> u64 {
         self.freq
     }
